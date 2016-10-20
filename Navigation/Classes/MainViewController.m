@@ -11,12 +11,12 @@
 #import "LeftPanelViewController.h"
 
 #define CENTER_TAG 1
-#define LEFT_PANEL TAG 2
+#define LEFT_PANEL_TAG 2
 
 @interface MainViewController () <CenterViewControllerDelegate>
 
 @property (nonatomic, strong) CenterViewController      *centerViewController;
-@property (nonatomic, strong) LeftPanelViewController   *leftViewController;
+@property (nonatomic, strong) LeftPanelViewController   *leftPanelViewController;
 @property (nonatomic, assign) BOOL                      showingLeftPanel;
 
 @end
@@ -48,7 +48,7 @@
 
 - (void)viewDidAppear:(BOOL)animated
 {
-	[super viewDidAppear:animated];
+    [super viewDidAppear:animated];
 }
 
 #pragma mark -
@@ -56,12 +56,12 @@
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-	[super viewWillDisappear:animated];
+    [super viewWillDisappear:animated];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
 {
-	[super viewDidDisappear:animated];
+    [super viewDidDisappear:animated];
 }
 
 #pragma mark -
@@ -90,12 +90,33 @@
 
 - (UIView *)getLeftView
 {
+    if(_leftPanelViewController == nil)
+    {
+        // this is where you define the view for the left panel
+        self.leftPanelViewController = [[LeftPanelViewController alloc] initWithNibName:@"LeftPanelViewController" bundle:nil];
+        self.leftPanelViewController.view.tag = LEFT_PANEL_TAG;
+        self.leftPanelViewController.delegate = _centerViewController;
+        
+        [self.view addSubview:self.leftPanelViewController.view];
+        
+        [self addChildViewController:_leftPanelViewController];
+        [_leftPanelViewController didMoveToParentViewController:self];
+        
+        _leftPanelViewController.view.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
+    }
     
+    self.showingLeftPanel = YES;
+    
+    //set up view shadows
+    [self showCenterViewWithShadow:YES withOffset:-2];
+    
+    UIView *view = self.leftPanelViewController.view;
+    return view;
     
 }
 
 - (UIView *)getRightView
-{     
+{
     UIView *view = nil;
     return view;
 }
@@ -125,7 +146,7 @@
 }
 
 - (void)movePanelToOriginalPosition
-{    
+{
 }
 
 #pragma mark -
